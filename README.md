@@ -6,23 +6,23 @@ A document editor wherein multiple users can edit the same document simulataneou
 
 ## Structure
 
-- ** `backend/` **: Example.
-    - ** `package-lock.json` **: Example.
-    - ** `package.json` **: Example.
-    - ** `server.js` **: Example.
-- ** `frontend/` **: Example.
-    - ** `public/` **: Example.
-        - ** `index.html` **: Example.
-        - ** `manifest.json` **: Example.
-    - ** `src/` **: Example.
-        - ** `App.css` **: Example.
-        - ** `App.js` **: Example.
-        - ** `App.test.js` **: Example.
-        - ** `index.css` **: Example.
-        - ** `index.js` **: Example.
-- ** `postcss.config.js` **: Example.
-- ** `tailwind.config.js` **: Example.
-- ** `package.json` **: Example.
+- **`backend/`**: Server-side code (Node.js/Express).
+    - `package-lock.json`: Locks backend dependencies.
+    - `package.json`: Backend dependencies and scripts.
+    - `server.js`: Main backend entry point.
+- **`frontend/`**: Client-side code (React/Vue).
+    - **`public/`**: Assets served directly.
+        - `index.html`: Main HTML file.
+        - `manifest.json`: PWA manifest.
+    - **`src/`**: Source code for the frontend.
+        - `App.css`: Styles for the main App component.
+        - `App.js`: Main application component.
+        - `App.test.js`: Tests for the App component.
+        - `index.css`: Global styles.
+        - `index.js`: Frontend entry point (renders App).
+- `postcss.config.js`: PostCSS configuration.
+- `tailwind.config.js`: Tailwind CSS configuration.
+- `package.json`: Root project dependencies and scripts.
 
 ## Technology Used
 
