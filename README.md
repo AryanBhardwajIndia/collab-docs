@@ -10,7 +10,24 @@ A document editor wherein multiple users can edit the same document simulataneou
 
 This project uses a standard full-stack configuration:
 ```
-. ├── backend/ │ ├── package-lock.json │ ├── package.json │ └── server.js ├── frontend/ │ ├── public/ │ │ ├── index.html │ │ └── manifest.json │ └── src/ │ ├── App.css │ ├── App.js │ ├── App.test.js │ ├── index.css │ └── index.js ├── package.json ├── postcss.config.js └── tailwind.config.js
+. 
+├── backend/ 
+│ ├── package-lock.json 
+│ ├── package.json 
+│ └── server.js 
+├── frontend/ 
+│ ├── public/ 
+│ │ ├── index.html 
+│ │ └── manifest.json 
+│ └── src/ 
+│ ├── App.css 
+│ ├── App.js 
+│ ├── App.test.js 
+│ ├── index.css 
+│ └── index.js 
+├── package.json 
+├── postcss.config.js 
+└── tailwind.config.js
 ```
 
 ## Technology Used
