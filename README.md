@@ -8,7 +8,6 @@ A document editor wherein multiple users can edit the same document simulataneou
 
 ## Project Structure
 
-This project uses a standard full-stack configuration:
 ```
 . 
 ├── backend/ 
