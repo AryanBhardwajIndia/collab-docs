@@ -194,6 +194,23 @@ app.put('/api/documents/:id', authenticateToken, async (req, res) => {
   }
 });
 
+app.delete('/api/documents/:id', authenticateToken, async (req, res) => {
+  try {
+    const document = await DocumentModel.findOneAndDelete({
+      _id: req.params.id,
+      owner: req.user.userId
+    });
+
+    if (!document) {
+      return res.status(404).json({ message: 'Document not found or unauthorized' });
+    }
+
+    res.json({ message: 'Document deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
 app.post('/api/documents/:id/share', authenticateToken, async (req, res) => {
   try {
     const document = await DocumentModel.findOne({
