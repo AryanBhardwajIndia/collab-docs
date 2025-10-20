@@ -19,11 +19,11 @@ A document editor wherein multiple users can edit the same document simulataneou
 │ │ ├── index.html 
 │ │ └── manifest.json 
 │ └── src/ 
-│ ├── App.css 
-│ ├── App.js 
-│ ├── App.test.js 
-│ ├── index.css 
-│ └── index.js 
+│   ├── App.css 
+│   ├── App.js 
+│   ├── App.test.js 
+│   ├── index.css 
+│   └── index.js 
 ├── package.json 
 ├── postcss.config.js 
 └── tailwind.config.js
