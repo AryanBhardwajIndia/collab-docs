@@ -1,8 +1,6 @@
 # CollabDocs
 
-## Introduction
-
-A document editor wherein multiple users can edit the same document simulataneously, only requirement being that the users must be logged in.
+A collaborative document editor wherein multiple users can edit the same document simulataneously, only requirement being that the users must be logged in.
 
 ## Structure
 
