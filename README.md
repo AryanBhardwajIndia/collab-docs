@@ -6,23 +6,12 @@ A document editor wherein multiple users can edit the same document simulataneou
 
 ## Structure
 
-- **`backend/`**: Server-side code (Node.js/Express).
-    - `package-lock.json`: Locks backend dependencies.
-    - `package.json`: Backend dependencies and scripts.
-    - `server.js`: Main backend entry point.
-- **`frontend/`**: Client-side code (React/Vue).
-    - **`public/`**: Assets served directly.
-        - `index.html`: Main HTML file.
-        - `manifest.json`: PWA manifest.
-    - **`src/`**: Source code for the frontend.
-        - `App.css`: Styles for the main App component.
-        - `App.js`: Main application component.
-        - `App.test.js`: Tests for the App component.
-        - `index.css`: Global styles.
-        - `index.js`: Frontend entry point (renders App).
-- `postcss.config.js`: PostCSS configuration.
-- `tailwind.config.js`: Tailwind CSS configuration.
-- `package.json`: Root project dependencies and scripts.
+## Project Structure
+
+This project uses a standard full-stack configuration:
+```
+. ├── backend/ │ ├── package-lock.json │ ├── package.json │ └── server.js ├── frontend/ │ ├── public/ │ │ ├── index.html │ │ └── manifest.json │ └── src/ │ ├── App.css │ ├── App.js │ ├── App.test.js │ ├── index.css │ └── index.js ├── package.json ├── postcss.config.js └── tailwind.config.js
+```
 
 ## Technology Used
 
