@@ -7,8 +7,7 @@ A document editor wherein multiple users can edit the same document simulataneou
 ## Structure
 
 |<br />
-|<br />
-|_backend<br />
+|-backend<br />
 |<br />
 |_frontend<br />
 
