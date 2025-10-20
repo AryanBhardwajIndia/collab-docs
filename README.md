@@ -6,23 +6,23 @@ A document editor wherein multiple users can edit the same document simulataneou
 
 ## Structure
 
-- ** `backend/` **:
-    - ** `package-lock.json` **:
-    - ** `package.json` **:
-    - ** `server.js` **:
-- ** `frontend/` **:
-    - ** `public/` **:
-        - ** `index.html` **:
-        - ** `manifest.json` **:
-    - ** `src/` **:
-        - ** `App.css` **:
-        - ** `App.js` **:
-        - ** `App.test.js` **:
-        - ** `index.css` **:
-        - ** `index.js` **:
-- ** `postcss.config.js` **:
-- ** `tailwind.config.js` **:
-- ** `package.json` **:
+- ** `backend/` **: Example.
+    - ** `package-lock.json` **: Example.
+    - ** `package.json` **: Example.
+    - ** `server.js` **: Example.
+- ** `frontend/` **: Example.
+    - ** `public/` **: Example.
+        - ** `index.html` **: Example.
+        - ** `manifest.json` **: Example.
+    - ** `src/` **: Example.
+        - ** `App.css` **: Example.
+        - ** `App.js` **: Example.
+        - ** `App.test.js` **: Example.
+        - ** `index.css` **: Example.
+        - ** `index.js` **: Example.
+- ** `postcss.config.js` **: Example.
+- ** `tailwind.config.js` **: Example.
+- ** `package.json` **: Example.
 
 ## Technology Used
 
