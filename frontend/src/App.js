@@ -183,6 +183,32 @@ const App = () => {
     }
   };
 
+  const handleDeleteDocument = async (docId) => {
+    if (!window.confirm('Are you sure you want to delete this document?')) {
+      return;
+    }
+    
+    try {
+      const res = await fetch(`${API_URL}/documents/${docId}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      
+      if (res.ok) {
+        alert('Document deleted successfully');
+        fetchDocuments();
+      } else {
+        const data = await res.json();
+        alert(data.message || 'Failed to delete document');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Failed to delete document');
+    }
+  };
+
   const handleOpenDocument = async (doc) => {
     setCurrentDoc(doc);
     setDocContent(doc.content);
@@ -255,6 +281,7 @@ const App = () => {
         documents={documents}
         onCreateDocument={handleCreateDocument}
         onOpenDocument={handleOpenDocument}
+        onDeleteDocument={handleDeleteDocument}
         onLogout={handleLogout}
         onAccessShared={handleAccessSharedDocument}
       />
@@ -267,9 +294,11 @@ const App = () => {
         document={currentDoc}
         content={docContent}
         collaborators={collaborators}
+        user={user}
         onContentChange={handleContentChange}
         onGenerateShareLink={handleGenerateShareLink}
         onExport={handleExport}
+        onDelete={handleDeleteDocument}
         onBack={() => setView('dashboard')}
       />
     );
@@ -339,21 +368,21 @@ const SignupForm = ({ onSignup, onSwitchToLogin }) => {
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
-          required />
+          />
           <input
             type="email"
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
-          required />
+          />
           <input
             type="password"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
-          required />
+          />
           <button
             onClick={() => onSignup(name, email, password)}
             className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition"
@@ -372,7 +401,7 @@ const SignupForm = ({ onSignup, onSwitchToLogin }) => {
   );
 };
 
-const Dashboard = ({ user, documents, onCreateDocument, onOpenDocument, onLogout, onAccessShared }) => {
+const Dashboard = ({ user, documents, onCreateDocument, onOpenDocument, onDeleteDocument, onLogout, onAccessShared }) => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [newDocTitle, setNewDocTitle] = useState('');
@@ -388,18 +417,14 @@ const Dashboard = ({ user, documents, onCreateDocument, onOpenDocument, onLogout
 
   const handleAccessShare = () => {
     if (shareLink.trim()) {
-      try {
-        const urlParams = new URLSearchParams(new URL(shareLink).search);
-        const token = urlParams.get('share');
-        if (token) {
-          onAccessShared(token);
-          setShareLink('');
-          setShowShareModal(false);
-        } else {
-          alert('Invalid share link: No token found');
-        }
-      } catch (error) {
-         alert('Invalid share link format');
+      const urlParams = new URLSearchParams(new URL(shareLink).search);
+      const token = urlParams.get('share');
+      if (token) {
+        onAccessShared(token);
+        setShareLink('');
+        setShowShareModal(false);
+      } else {
+        alert('Invalid share link');
       }
     }
   };
@@ -450,14 +475,34 @@ const Dashboard = ({ user, documents, onCreateDocument, onOpenDocument, onLogout
           {documents.map((doc) => (
             <div
               key={doc._id}
-              onClick={() => onOpenDocument(doc)}
-              className="bg-white p-6 rounded-lg shadow hover:shadow-lg cursor-pointer transition"
+              className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition relative group"
             >
-              <FileText className="w-8 h-8 text-indigo-600 mb-2" />
-              <h3 className="font-semibold text-lg mb-2">{doc.title}</h3>
-              <p className="text-sm text-gray-500">
-                Updated {new Date(doc.updatedAt).toLocaleDateString()}
-              </p>
+              <div onClick={() => onOpenDocument(doc)} className="cursor-pointer">
+                <FileText className="w-8 h-8 text-indigo-600 mb-2" />
+                <h3 className="font-semibold text-lg mb-2">{doc.title}</h3>
+                <p className="text-sm text-gray-500">
+                  Updated {new Date(doc.updatedAt).toLocaleDateString()}
+                </p>
+                {doc.owner.toString() !== user._id && (
+                  <span className="inline-block mt-2 px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">
+                    Shared with you
+                  </span>
+                )}
+              </div>
+              {doc.owner.toString() === user._id && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDeleteDocument(doc._id);
+                  }}
+                  className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity bg-red-500 text-white p-2 rounded-lg hover:bg-red-600"
+                  title="Delete document"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              )}
             </div>
           ))}
         </div>
@@ -468,6 +513,35 @@ const Dashboard = ({ user, documents, onCreateDocument, onOpenDocument, onLogout
           </div>
         )}
       </div>
+
+      {showCreateModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 className="text-xl font-bold mb-4">Create New Document</h3>
+            <input
+              type="text"
+              placeholder="Document Title"
+              value={newDocTitle}
+              onChange={(e) => setNewDocTitle(e.target.value)}
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none mb-4"
+            />
+            <div className="flex gap-2">
+              <button
+                onClick={handleCreate}
+                className="flex-1 bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition"
+              >
+                Create
+              </button>
+              <button
+                onClick={() => setShowCreateModal(false)}
+                className="flex-1 bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 transition"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showShareModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -501,40 +575,18 @@ const Dashboard = ({ user, documents, onCreateDocument, onOpenDocument, onLogout
           </div>
         </div>
       )}
-
-      {showCreateModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-xl font-bold mb-4">Create New Document</h3>
-            <input
-              type="text"
-              placeholder="Document Title"
-              value={newDocTitle}
-              onChange={(e) => setNewDocTitle(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none mb-4"
-            />
-            <div className="flex gap-2">
-              <button
-                onClick={handleCreate}
-                className="flex-1 bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition"
-              >
-                Create
-              </button>
-              <button
-                onClick={() => setShowCreateModal(false)}
-                className="flex-1 bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 transition"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
 
-const Editor = ({ document, content, collaborators, onContentChange, onGenerateShareLink, onExport, onBack }) => {
+const Editor = ({ document, content, collaborators, user, onContentChange, onGenerateShareLink, onExport, onDelete, onBack }) => {
+  const isOwner = document.owner.toString() === user._id;
+  
+  const handleDelete = () => {
+    onDelete(document._id);
+    onBack();
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <nav className="bg-white shadow-sm">
@@ -544,6 +596,11 @@ const Editor = ({ document, content, collaborators, onContentChange, onGenerateS
               ← Back
             </button>
             <h1 className="text-xl font-bold">{document.title}</h1>
+            {!isOwner && (
+              <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">
+                Shared with you
+              </span>
+            )}
           </div>
           <div className="flex items-center gap-2">
             {collaborators.length > 0 && (
@@ -552,33 +609,47 @@ const Editor = ({ document, content, collaborators, onContentChange, onGenerateS
                 <span className="text-sm">{collaborators.length} online</span>
               </div>
             )}
-            <button
-              onClick={onGenerateShareLink}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-            >
-              <Share2 className="w-4 h-4" />
-              Share
-            </button>
-            <div className="relative group">
-              <button className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
-                <Download className="w-4 h-4" />
-                Export
-              </button>
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+            {isOwner && (
+              <>
                 <button
-                  onClick={() => onExport('docx')}
-                  className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                  onClick={onGenerateShareLink}
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
                 >
-                  Export as DOCX
+                  <Share2 className="w-4 h-4" />
+                  Share
                 </button>
+                <div className="relative group">
+                  <button className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+                    <Download className="w-4 h-4" />
+                    Export
+                  </button>
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
+                    <button
+                      onClick={() => onExport('docx')}
+                      className="block w-full text-left px-4 py-2 hover:bg-gray-100 rounded-t-lg"
+                    >
+                      Export as DOCX
+                    </button>
+                    <button
+                      onClick={() => onExport('pdf')}
+                      className="block w-full text-left px-4 py-2 hover:bg-gray-100 rounded-b-lg"
+                    >
+                      Export as PDF
+                    </button>
+                  </div>
+                </div>
                 <button
-                  onClick={() => onExport('pdf')}
-                  className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                  onClick={handleDelete}
+                  className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+                  title="Delete document"
                 >
-                  Export as PDF
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                  Delete
                 </button>
-              </div>
-            </div>
+              </>
+            )}
           </div>
         </div>
       </nav>
