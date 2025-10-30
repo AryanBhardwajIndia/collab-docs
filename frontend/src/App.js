@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FileText, Share2, Download, LogOut, Plus, Users } from 'lucide-react';
 
-const API_URL = 'http://13.51.178.10:5002/api';
+const API_URL = 'https://13.51.178.10:5002/api';
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -48,7 +48,7 @@ const App = () => {
   }, [currentDoc]);
 
   const connectWebSocket = () => {
-    const ws = new WebSocket(`ws://13.51.178.10:5002`);
+    const ws = new WebSocket(`wss://13.51.178.10:5002`);
     
     ws.onopen = () => {
       ws.send(JSON.stringify({
