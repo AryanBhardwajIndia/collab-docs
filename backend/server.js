@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -12,13 +13,22 @@ const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
-app.use(cors());
-app.use(express.json());
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/collab-editor';
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
+const PORT = process.env.PORT || 5002;
 
-mongoose.connect('mongodb://localhost:27017/collab-editor', {
+app.use(cors({
+  origin: FRONTEND_URL,
+  credentials: true
+}));
+
+mongoose.connect(MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });
+
+app.use(express.json());
 
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -43,8 +53,6 @@ const documentSchema = new mongoose.Schema({
 });
 
 const DocumentModel = mongoose.model('Document', documentSchema);
-
-const JWT_SECRET = 'your-secret-key-change-in-production';
 
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
@@ -408,7 +416,6 @@ function broadcastCollaborators(documentId) {
   }
 }
 
-const PORT = process.env.PORT || 5002;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
