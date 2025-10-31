@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FileText, Share2, Download, LogOut, Plus, Users } from 'lucide-react';
 
-const API_URL = 'https://api.aryanbhardwaj.xyz/api';
+const API_URL = 'https://collab-docs-e2ud.onrender.com/api';
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -48,7 +48,7 @@ const App = () => {
   }, [currentDoc]);
 
   const connectWebSocket = () => {
-    const ws = new WebSocket(`wss://api.aryanbhardwaj.xyz`);
+    const ws = new WebSocket(`wss://collab-docs-e2ud.onrender.com`);
     
     ws.onopen = () => {
       ws.send(JSON.stringify({
