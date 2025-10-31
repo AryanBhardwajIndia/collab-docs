@@ -1,4 +1,5 @@
 require('dotenv').config();
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -16,19 +17,22 @@ const wss = new WebSocket.Server({ server });
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/collab-editor';
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
-const PORT = process.env.PORT || 5002;
+const PORT = process.env.PORT || 5000;
 
 app.use(cors({
   origin: FRONTEND_URL,
   credentials: true
 }));
+app.use(express.json());
 
 mongoose.connect(MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
+}).then(() => {
+  console.log('MongoDB connected successfully');
+}).catch(err => {
+  console.error('MongoDB connection error:', err);
 });
-
-app.use(express.json());
 
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -70,6 +74,10 @@ const authenticateToken = (req, res, next) => {
     next();
   });
 };
+
+app.get('/', (req, res) => {
+  res.json({ message: 'Collaborative Editor API is running', status: 'ok' });
+});
 
 app.post('/api/auth/signup', async (req, res) => {
   try {
